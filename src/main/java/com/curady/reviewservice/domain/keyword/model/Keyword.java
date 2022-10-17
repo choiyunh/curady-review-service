@@ -1,5 +1,6 @@
 package com.curady.reviewservice.domain.keyword.model;
 
+
 import lombok.Getter;
 
 import javax.persistence.Entity;
