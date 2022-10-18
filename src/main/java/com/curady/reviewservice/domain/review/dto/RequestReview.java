@@ -1,4 +1,4 @@
-package com.curady.reviewservice.web.dto;
+package com.curady.reviewservice.domain.review.dto;
 
 import lombok.Getter;
 
