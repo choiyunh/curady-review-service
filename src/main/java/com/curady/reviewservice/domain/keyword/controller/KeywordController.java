@@ -1,4 +1,4 @@
-package com.curady.reviewservice.web.controller;
+package com.curady.reviewservice.domain.keyword.controller;
 
 import com.curady.reviewservice.domain.keyword.dto.ResponseKeywords;
 import com.curady.reviewservice.domain.keyword.service.KeywordService;
