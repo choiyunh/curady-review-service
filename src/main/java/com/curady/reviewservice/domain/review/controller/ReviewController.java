@@ -4,7 +4,6 @@ import com.curady.reviewservice.domain.review.dto.ResponseReviews;
 import com.curady.reviewservice.domain.review.service.ReviewService;
 import com.curady.reviewservice.global.result.MultipleResult;
 import com.curady.reviewservice.global.result.Result;
-import com.curady.reviewservice.global.result.SingleResult;
 import com.curady.reviewservice.global.service.ResponseService;
 import com.curady.reviewservice.domain.review.dto.RequestReview;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,8 +26,8 @@ public class ReviewController {
     }
 
     @Operation(summary = "리뷰 목록 조회(페이징 적용)", description = "리뷰 목록을 페이지별로 반환합니다. page의 기본값은 1, size는 6, sort는 id,ASC")
-    @GetMapping("/reviews")
-    public MultipleResult<ResponseReviews> getReviews(Pageable pageable) {
-        return responseService.getMultipleResult(reviewService.getReviews(pageable));
+    @GetMapping("/reviews/{lectureId}")
+    public MultipleResult<ResponseReviews> getReviews(@PathVariable Long lectureId, Pageable pageable) {
+        return responseService.getMultipleResult(reviewService.getReviews(lectureId, pageable));
     }
 }

@@ -30,7 +30,7 @@ public class ReviewService {
     private final UserServiceFeignClient userServiceFeignClient;
 
     @Transactional
-    public Boolean createReview(String userId, RequestReview requestReview) {
+    public void createReview(String userId, RequestReview requestReview) {
         Review review = reviewRepository.save(Review.builder()
                 .userId(Long.valueOf(userId))
                 .lectureId(requestReview.getLectureId())
@@ -44,12 +44,11 @@ public class ReviewService {
                     .keyword(v)
                     .build());
         });
-        return true;
     }
 
     @Transactional
-    public List<ResponseReviews> getReviews(Pageable pageable) {
-        Page<Review> reviews = reviewRepository.findAll(pageable);
+    public List<ResponseReviews> getReviews(Long lectureId, Pageable pageable) {
+        Page<Review> reviews = reviewRepository.findAllByLectureId(lectureId, pageable);
         List<Long> userIds = new ArrayList<>();
         reviews.getContent().forEach(v -> {
             userIds.add(v.getUserId());
