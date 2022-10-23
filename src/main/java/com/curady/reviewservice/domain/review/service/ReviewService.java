@@ -38,12 +38,14 @@ public class ReviewService {
                 .build());
 
         List<Keyword> keywords = keywordRepository.findByIdIn(requestReview.getKeywordIds());
+        List<ReviewKeyword> reviewKeywords = new ArrayList<>();
         keywords.forEach(v -> {
-            reviewKeywordRepository.save(ReviewKeyword.builder()
+            reviewKeywords.add(ReviewKeyword.builder()
                     .review(review)
                     .keyword(v)
                     .build());
         });
+        reviewKeywordRepository.saveAll(reviewKeywords);
     }
 
     @Transactional
