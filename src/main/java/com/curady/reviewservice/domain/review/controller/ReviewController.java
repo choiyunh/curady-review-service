@@ -1,9 +1,11 @@
 package com.curady.reviewservice.domain.review.controller;
 
+import com.curady.reviewservice.domain.review.dto.ResponseReviewStatistics;
 import com.curady.reviewservice.domain.review.dto.ResponseReviews;
 import com.curady.reviewservice.domain.review.service.ReviewService;
 import com.curady.reviewservice.global.result.MultipleResult;
 import com.curady.reviewservice.global.result.Result;
+import com.curady.reviewservice.global.result.SingleResult;
 import com.curady.reviewservice.global.service.ResponseService;
 import com.curady.reviewservice.domain.review.dto.RequestReview;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,5 +31,11 @@ public class ReviewController {
     @GetMapping("/reviews/{lectureId}")
     public MultipleResult<ResponseReviews> getReviews(@PathVariable Long lectureId, Pageable pageable) {
         return responseService.getMultipleResult(reviewService.getReviews(lectureId, pageable));
+    }
+
+    @Operation(summary = "리뷰 개수 및 키워드 통계 조회", description = "리뷰 개수 및 키워드 통계 조회")
+    @GetMapping("/review/statistics/{lectureId}")
+    public SingleResult<ResponseReviewStatistics> getReviews(@PathVariable Long lectureId) {
+        return responseService.getSingleResult(reviewService.getReviewStatistics(lectureId));
     }
 }
