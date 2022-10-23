@@ -26,5 +26,7 @@ public class ReviewKeyword {
     @ManyToOne
     @JoinColumn(name = "keyword_id")
     private Keyword keyword;
+
+    private Long lectureId;
 }
 
