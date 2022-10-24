@@ -13,6 +13,8 @@ import java.util.Map;
 @AllArgsConstructor
 public class ResponseReviewStatistics {
     private Long totalReview;
+    private Integer positiveKeywordCount;
+    private Integer negativeKeywordCount;
     private Long positiveKeywordRatio;
     private Long negativeKeywordRatio;
     private List<Map<String, Long>> positiveKeywordList;

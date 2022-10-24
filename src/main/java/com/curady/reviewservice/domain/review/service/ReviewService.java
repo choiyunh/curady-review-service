@@ -120,6 +120,8 @@ public class ReviewService {
 
         return ResponseReviewStatistics.builder()
                 .totalReview(totalReview)
+                .positiveKeywordCount(positiveCount)
+                .negativeKeywordCount(negativeCount)
                 .positiveKeywordRatio(Math.round((double) positiveCount / totalKeyword * 100))
                 .negativeKeywordRatio(Math.round((double) negativeCount / totalKeyword * 100))
                 .positiveKeywordList(positiveKeywords)
