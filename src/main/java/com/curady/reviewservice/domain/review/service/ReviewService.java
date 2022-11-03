@@ -148,4 +148,8 @@ public class ReviewService {
             }
         }
     }
+
+    public Boolean isRegistered(String userId, Long lectureId) {
+        return reviewRepository.findByLectureIdAndUserId(lectureId, Long.valueOf(userId)).isPresent();
+    }
 }
