@@ -9,6 +9,7 @@ import com.curady.reviewservice.domain.review.repository.ReviewRepository;
 import com.curady.reviewservice.domain.reviewKeyword.model.ReviewKeyword;
 import com.curady.reviewservice.domain.reviewKeyword.repository.ReviewKeywordRepository;
 import com.curady.reviewservice.domain.review.dto.RequestReview;
+import com.curady.reviewservice.global.advice.exception.ReviewAlreadyExistsException;
 import com.curady.reviewservice.global.feign.UserServiceFeignClient;
 import com.curady.reviewservice.global.feign.dto.ResponseUserNicknameAndImage;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,11 @@ public class ReviewService {
 
     @Transactional
     public void createReview(String userId, RequestReview requestReview) {
+        if (reviewRepository.findByLectureIdAndUserId(
+                requestReview.getLectureId(), Long.valueOf(userId)).isPresent()) {
+            throw new ReviewAlreadyExistsException();
+        }
+
         Review review = reviewRepository.save(Review.builder()
                 .userId(Long.valueOf(userId))
                 .lectureId(requestReview.getLectureId())
