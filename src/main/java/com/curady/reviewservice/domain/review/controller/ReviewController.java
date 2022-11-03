@@ -38,4 +38,11 @@ public class ReviewController {
     public SingleResult<ResponseReviewStatistics> getReviews(@PathVariable Long lectureId) {
         return responseService.getSingleResult(reviewService.getReviewStatistics(lectureId));
     }
+
+    @Operation(summary = "리뷰 등록 여부 조회", description = "리뷰 등록 여부 조회")
+    @GetMapping("/auth/review/{lectureId}")
+    public SingleResult<Boolean> isRegistered(@RequestHeader("X-Authorization-Id") String userId,
+                                              @PathVariable Long lectureId) {
+        return responseService.getSingleResult(reviewService.isRegistered(userId, lectureId));
+    }
 }
