@@ -85,6 +85,31 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
+    public List<ResponseReviews> getReviewsByUser(String userId, Pageable pageable) {
+        Page<Review> reviews = reviewRepository.findAllByUserId(Long.valueOf(userId), pageable);
+        ResponseUserNicknameAndImage responseUserNicknameAndImages =
+                userServiceFeignClient.getUserNicknameAndImg(List.of(Long.valueOf(userId)));
+
+        List<ResponseReviews> responseReviews = new ArrayList<>();
+        for (int i = 0; i < reviews.getContent().size(); i++) {
+            List<String> keywordContent = new ArrayList<>();
+            List<ReviewKeyword> keywords = reviews.getContent().get(i).getKeywords();
+            keywords.forEach(v -> {
+                keywordContent.add(v.getKeyword().getContent());
+            });
+
+            responseReviews.add(
+                    ResponseReviews.builder()
+                            .nickname(responseUserNicknameAndImages.getData().get(0).getNickname())
+                            .imageUrl(responseUserNicknameAndImages.getData().get(0).getImageUrl())
+                            .content(reviews.getContent().get(i).getContent())
+                            .keywordContent(keywordContent)
+                            .build());
+        }
+        return responseReviews;
+    }
+
+    @Transactional(readOnly = true)
     public ResponseReviewStatistics getReviewStatistics(Long lectureId) {
         Long totalReview = reviewRepository.countAllByLectureId(lectureId);
         List<ReviewKeyword> reviewKeywords = reviewKeywordRepository.findAllByLectureId(lectureId);
