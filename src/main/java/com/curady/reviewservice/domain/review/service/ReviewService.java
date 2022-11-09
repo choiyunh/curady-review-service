@@ -9,7 +9,9 @@ import com.curady.reviewservice.domain.review.repository.ReviewRepository;
 import com.curady.reviewservice.domain.reviewKeyword.model.ReviewKeyword;
 import com.curady.reviewservice.domain.reviewKeyword.repository.ReviewKeywordRepository;
 import com.curady.reviewservice.domain.review.dto.RequestReview;
+import com.curady.reviewservice.global.advice.exception.AccessReviewDeniedException;
 import com.curady.reviewservice.global.advice.exception.ReviewAlreadyExistsException;
+import com.curady.reviewservice.global.advice.exception.ReviewNotFoundException;
 import com.curady.reviewservice.global.feign.UserServiceFeignClient;
 import com.curady.reviewservice.global.feign.dto.ResponseUserNicknameAndImage;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +55,15 @@ public class ReviewService {
                     .build());
         });
         reviewKeywordRepository.saveAll(reviewKeywords);
+    }
+
+    @Transactional
+    public void deleteReview(String userId, Long reviewId) {
+        Review review = reviewRepository.findById(reviewId).orElseThrow(ReviewNotFoundException::new);
+        if (!review.getUserId().equals(Long.valueOf(userId))) {
+            throw new AccessReviewDeniedException();
+        }
+        reviewRepository.delete(review);
     }
 
     @Transactional(readOnly = true)
