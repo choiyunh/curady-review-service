@@ -29,6 +29,14 @@ public class ReviewController {
         return responseService.getSuccessResult();
     }
 
+    @Operation(summary = "리뷰 삭제", description = "리뷰를 삭제합니다.")
+    @DeleteMapping("/auth/review/{reviewId}")
+    public Result deleteReview(@RequestHeader("X-Authorization-Id") String userId,
+                               @PathVariable Long reviewId) {
+        reviewService.deleteReview(userId, reviewId);
+        return responseService.getSuccessResult();
+    }
+
     @Operation(summary = "강의별 리뷰 목록 조회(페이징 적용)", description = "강의별 리뷰 목록을 페이지별로 반환합니다. page의 기본값은 1, size는 6, sort는 id,DESC")
     @GetMapping("/reviews/{lectureId}")
     public MultipleResult<ResponseReviews> getReviews(@PathVariable Long lectureId,
