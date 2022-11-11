@@ -1,9 +1,7 @@
 package com.curady.reviewservice.global.advice;
 
 
-import com.curady.reviewservice.global.advice.exception.AccessReviewDeniedException;
-import com.curady.reviewservice.global.advice.exception.ReviewAlreadyExistsException;
-import com.curady.reviewservice.global.advice.exception.ReviewNotFoundException;
+import com.curady.reviewservice.global.advice.exception.*;
 import com.curady.reviewservice.global.result.Result;
 import com.curady.reviewservice.global.service.ResponseService;
 import lombok.RequiredArgsConstructor;
@@ -34,4 +32,17 @@ public class ExceptionAdvice {
     public Result accessReviewDeniedException() {
         return responseService.getFailureResult(-303, "본인이 작성한 리뷰만 삭제할 수 있습니다.");
     }
+
+    @ExceptionHandler(LikesAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Result likesAlreadyExistsException() {
+        return responseService.getFailureResult(-304, "이미 좋아요 한 리뷰입니다.");
+    }
+
+    @ExceptionHandler(LikesNotFoundException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Result likesNotFoundException() {
+        return responseService.getFailureResult(-305, "좋아요하지 않은 리뷰입니다.");
+    }
+
 }
