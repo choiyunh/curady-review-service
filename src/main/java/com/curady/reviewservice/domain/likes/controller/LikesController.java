@@ -30,7 +30,7 @@ public class LikesController {
         return responseService.getSuccessResult();
     }
 
-    @Operation(summary = "강의 좋아요 여부 반환", description = "강의 좋아요 여부 반환")
+    @Operation(summary = "리뷰 좋아요 여부 반환", description = "리뷰 좋아요 여부 반환")
     @GetMapping("/auth/{reviewId}/likes")
     public SingleResult<Boolean> isLiked(@RequestHeader("X-Authorization-Id") String userId,
                                          @PathVariable Long reviewId) {
