@@ -25,6 +25,7 @@ public class Review {
 
     private Long userId;
     private Long lectureId;
+    private boolean withdraw = false;
 
     @Column(length = 1000)
     private String content;
@@ -38,4 +39,8 @@ public class Review {
     @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     @UpdateTimestamp
     private Date updatedAt;
+
+    public void withdraw() {
+        this.withdraw = true;
+    }
 }

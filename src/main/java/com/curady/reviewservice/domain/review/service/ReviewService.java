@@ -34,8 +34,8 @@ public class ReviewService {
 
     @Transactional
     public void createReview(String userId, RequestReview requestReview) {
-        if (reviewRepository.findByLectureIdAndUserId(
-                requestReview.getLectureId(), Long.valueOf(userId)).isPresent()) {
+        if (reviewRepository.findByLectureIdAndUserIdAndWithdraw(
+                requestReview.getLectureId(), Long.valueOf(userId), false).isPresent()) {
             throw new ReviewAlreadyExistsException();
         }
 
@@ -63,12 +63,12 @@ public class ReviewService {
         if (!review.getUserId().equals(Long.valueOf(userId))) {
             throw new AccessReviewDeniedException();
         }
-        reviewRepository.delete(review);
+        review.withdraw();
     }
 
     @Transactional(readOnly = true)
     public List<ResponseReviews> getReviews(Long lectureId, Pageable pageable) {
-        Page<Review> reviews = reviewRepository.findAllByLectureId(lectureId, pageable);
+        Page<Review> reviews = reviewRepository.findAllByLectureIdAndWithdraw(lectureId, pageable, false);
         List<Long> userIds = new ArrayList<>();
         reviews.getContent().forEach(v -> {
             userIds.add(v.getUserId());
@@ -97,7 +97,7 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public List<ResponseReviews> getReviewsByUser(String userId, Pageable pageable) {
-        Page<Review> reviews = reviewRepository.findAllByUserId(Long.valueOf(userId), pageable);
+        Page<Review> reviews = reviewRepository.findAllByUserIdAndWithdraw(Long.valueOf(userId), pageable, false);
         ResponseUserNicknameAndImage responseUserNicknameAndImages =
                 userServiceFeignClient.getUserNicknameAndImg(List.of(Long.valueOf(userId)));
 
@@ -122,7 +122,7 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public ResponseReviewStatistics getReviewStatistics(Long lectureId) {
-        Long totalReview = reviewRepository.countAllByLectureId(lectureId);
+        Long totalReview = reviewRepository.countAllByLectureIdAndWithdraw(lectureId, false);
         List<ReviewKeyword> reviewKeywords = reviewKeywordRepository.findAllByLectureId(lectureId);
         int totalKeyword = reviewKeywords.size();
         if (totalKeyword == 0) {
@@ -186,6 +186,6 @@ public class ReviewService {
     }
 
     public Boolean isRegistered(String userId, Long lectureId) {
-        return reviewRepository.findByLectureIdAndUserId(lectureId, Long.valueOf(userId)).isPresent();
+        return reviewRepository.findByLectureIdAndUserIdAndWithdraw(lectureId, Long.valueOf(userId), false).isPresent();
     }
 }
