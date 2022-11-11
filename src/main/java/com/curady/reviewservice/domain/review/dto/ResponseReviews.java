@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResponseReviews {
+    private Long id;
     private String nickname;
     private String imageUrl;
     private String content;

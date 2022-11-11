@@ -9,11 +9,11 @@ import java.util.Optional;
 
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    Page<Review> findAllByLectureId(Long lectureId, Pageable pageable);
+    Page<Review> findAllByLectureIdAndWithdraw(Long lectureId, Pageable pageable, boolean withdraw);
 
-    Page<Review> findAllByUserId(Long userId, Pageable pageable);
+    Page<Review> findAllByUserIdAndWithdraw(Long userId, Pageable pageable, boolean withdraw);
 
-    Long countAllByLectureId(Long lectureId);
+    Long countAllByLectureIdAndWithdraw(Long lectureId, boolean withdraw);
 
-    Optional<Review> findByLectureIdAndUserId(Long lectureId, Long userId);
+    Optional<Review> findByLectureIdAndUserIdAndWithdraw(Long lectureId, Long userId, boolean withdraw);
 }
