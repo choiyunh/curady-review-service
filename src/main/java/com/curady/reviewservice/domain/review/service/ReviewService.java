@@ -43,6 +43,7 @@ public class ReviewService {
                 .userId(Long.valueOf(userId))
                 .lectureId(requestReview.getLectureId())
                 .content(requestReview.getContent())
+                .likes(0)
                 .build());
 
         List<Keyword> keywords = keywordRepository.findByIdIn(requestReview.getKeywordIds());
@@ -86,6 +87,7 @@ public class ReviewService {
 
             responseReviews.add(
                     ResponseReviews.builder()
+                            .id(reviews.getContent().get(i).getId())
                             .nickname(responseUserNicknameAndImages.getData().get(i).getNickname())
                             .imageUrl(responseUserNicknameAndImages.getData().get(i).getImageUrl())
                             .content(reviews.getContent().get(i).getContent())
@@ -111,6 +113,7 @@ public class ReviewService {
 
             responseReviews.add(
                     ResponseReviews.builder()
+                            .id(reviews.getContent().get(i).getId())
                             .nickname(responseUserNicknameAndImages.getData().get(0).getNickname())
                             .imageUrl(responseUserNicknameAndImages.getData().get(0).getImageUrl())
                             .content(reviews.getContent().get(i).getContent())
