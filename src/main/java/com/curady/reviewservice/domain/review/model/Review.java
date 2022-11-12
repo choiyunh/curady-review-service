@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -29,6 +30,8 @@ public class Review {
 
     @Column(length = 1000)
     private String content;
+    @ColumnDefault("0")
+    private Integer likes;
 
     @OneToMany(mappedBy = "review", fetch = FetchType.LAZY)
     private List<ReviewKeyword> keywords = new ArrayList<>();
@@ -43,4 +46,7 @@ public class Review {
     public void withdraw() {
         this.withdraw = true;
     }
+
+    public void increaseLikes() { this.likes++; }
+    public void decreaseLikes() { this.likes--; }
 }
