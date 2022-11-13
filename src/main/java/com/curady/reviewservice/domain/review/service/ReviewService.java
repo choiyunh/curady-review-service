@@ -51,6 +51,7 @@ public class ReviewService {
         keywords.forEach(v -> {
             reviewKeywords.add(ReviewKeyword.builder()
                     .review(review)
+                    .withdraw(false)
                     .keyword(v)
                     .lectureId(requestReview.getLectureId())
                     .build());
@@ -130,7 +131,7 @@ public class ReviewService {
     @Transactional(readOnly = true)
     public ResponseReviewStatistics getReviewStatistics(Long lectureId) {
         Long totalReview = reviewRepository.countAllByLectureIdAndWithdraw(lectureId, false);
-        List<ReviewKeyword> reviewKeywords = reviewKeywordRepository.findAllByLectureId(lectureId);
+        List<ReviewKeyword> reviewKeywords = reviewKeywordRepository.findAllByLectureIdAndWithdraw(lectureId, false);
         int totalKeyword = reviewKeywords.size();
         if (totalKeyword == 0) {
             return ResponseReviewStatistics.builder()

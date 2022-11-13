@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ReviewKeywordRepository extends JpaRepository<ReviewKeyword, Long> {
-    List<ReviewKeyword> findAllByLectureId(Long lectureId);
+    List<ReviewKeyword> findAllByLectureIdAndWithdraw(Long lectureId, boolean withdraw);
     List<ReviewKeyword> findAllByReview(Review review);
 }
