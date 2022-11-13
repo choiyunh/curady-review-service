@@ -23,10 +23,16 @@ public class ReviewKeyword {
     @JoinColumn(name = "review_id")
     private Review review;
 
+    private boolean withdraw = false;
+
     @ManyToOne
     @JoinColumn(name = "keyword_id")
     private Keyword keyword;
 
     private Long lectureId;
+
+    public void withdraw() {
+        this.withdraw = true;
+    }
 }
 

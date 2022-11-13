@@ -64,6 +64,10 @@ public class ReviewService {
         if (!review.getUserId().equals(Long.valueOf(userId))) {
             throw new AccessReviewDeniedException();
         }
+        List<ReviewKeyword> reviewKeywords = reviewKeywordRepository.findAllByReview(review);
+        for (ReviewKeyword reviewKeyword : reviewKeywords) {
+            reviewKeyword.withdraw();
+        }
         review.withdraw();
     }
 
