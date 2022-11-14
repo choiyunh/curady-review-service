@@ -1,10 +1,11 @@
 package com.curady.reviewservice.domain.review.controller;
 
 import com.curady.reviewservice.domain.review.dto.ResponseReviewStatistics;
-import com.curady.reviewservice.domain.review.dto.ResponseReviews;
+import com.curady.reviewservice.domain.review.dto.ResponseReviewsByLecture;
+import com.curady.reviewservice.domain.review.dto.ResponseReviewsByUser;
 import com.curady.reviewservice.domain.review.service.ReviewService;
-import com.curady.reviewservice.global.result.MultipleResult;
 import com.curady.reviewservice.global.result.Result;
+import com.curady.reviewservice.global.result.ReviewsResult;
 import com.curady.reviewservice.global.result.SingleResult;
 import com.curady.reviewservice.global.service.ResponseService;
 import com.curady.reviewservice.domain.review.dto.RequestReview;
@@ -39,16 +40,16 @@ public class ReviewController {
 
     @Operation(summary = "강의별 리뷰 목록 조회(페이징 적용)", description = "강의별 리뷰 목록을 페이지별로 반환합니다. page의 기본값은 1, size는 6, sort는 id,DESC")
     @GetMapping("/reviews/{lectureId}")
-    public MultipleResult<ResponseReviews> getReviews(@PathVariable Long lectureId,
-                                                      @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return responseService.getMultipleResult(reviewService.getReviews(lectureId, pageable));
+    public ReviewsResult<ResponseReviewsByLecture> getReviewsByLecture(@PathVariable Long lectureId,
+                                                                    @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return reviewService.getReviewsByLecture(lectureId, pageable);
     }
 
     @Operation(summary = "유저별 리뷰 목록 조회(페이징 적용)", description = "유저별 리뷰 목록을 페이지별로 반환합니다. page의 기본값은 1, size는 6, sort는 id,DESC")
     @GetMapping("/auth/reviews")
-    public MultipleResult<ResponseReviews> getReviewsByUser(@RequestHeader("X-Authorization-Id") String userId,
-                                                            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-        return responseService.getMultipleResult(reviewService.getReviewsByUser(userId, pageable));
+    public ReviewsResult<ResponseReviewsByUser> getReviewsByUser(@RequestHeader("X-Authorization-Id") String userId,
+                                                                 @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        return reviewService.getReviewsByUser(userId, pageable);
     }
 
     @Operation(summary = "리뷰 개수 및 키워드 통계 조회", description = "리뷰 개수 및 키워드 통계 조회")
