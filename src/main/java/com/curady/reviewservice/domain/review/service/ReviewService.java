@@ -3,7 +3,8 @@ package com.curady.reviewservice.domain.review.service;
 import com.curady.reviewservice.domain.keyword.model.Keyword;
 import com.curady.reviewservice.domain.keyword.repository.KeywordRepository;
 import com.curady.reviewservice.domain.review.dto.ResponseReviewStatistics;
-import com.curady.reviewservice.domain.review.dto.ResponseReviews;
+import com.curady.reviewservice.domain.review.dto.ResponseReviewsByLecture;
+import com.curady.reviewservice.domain.review.dto.ResponseReviewsByUser;
 import com.curady.reviewservice.domain.review.model.Review;
 import com.curady.reviewservice.domain.review.repository.ReviewRepository;
 import com.curady.reviewservice.domain.reviewKeyword.model.ReviewKeyword;
@@ -12,8 +13,12 @@ import com.curady.reviewservice.domain.review.dto.RequestReview;
 import com.curady.reviewservice.global.advice.exception.AccessReviewDeniedException;
 import com.curady.reviewservice.global.advice.exception.ReviewAlreadyExistsException;
 import com.curady.reviewservice.global.advice.exception.ReviewNotFoundException;
+import com.curady.reviewservice.global.feign.LectureServiceFeignClient;
 import com.curady.reviewservice.global.feign.UserServiceFeignClient;
+import com.curady.reviewservice.global.feign.dto.ResponseLecture;
 import com.curady.reviewservice.global.feign.dto.ResponseUserNicknameAndImage;
+import com.curady.reviewservice.global.result.ReviewsResult;
+import com.curady.reviewservice.global.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,6 +36,8 @@ public class ReviewService {
     private final ReviewKeywordRepository reviewKeywordRepository;
     private final KeywordRepository keywordRepository;
     private final UserServiceFeignClient userServiceFeignClient;
+    private final LectureServiceFeignClient lectureServiceFeignClient;
+    private final ResponseService responseService;
 
     @Transactional
     public void createReview(String userId, RequestReview requestReview) {
@@ -73,7 +80,7 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResponseReviews> getReviews(Long lectureId, Pageable pageable) {
+    public ReviewsResult<ResponseReviewsByLecture> getReviewsByLecture(Long lectureId, Pageable pageable) {
         Page<Review> reviews = reviewRepository.findAllByLectureIdAndWithdraw(lectureId, pageable, false);
         List<Long> userIds = new ArrayList<>();
         reviews.getContent().forEach(v -> {
@@ -82,7 +89,7 @@ public class ReviewService {
         ResponseUserNicknameAndImage responseUserNicknameAndImages =
                 userServiceFeignClient.getUserNicknameAndImg(userIds);
 
-        List<ResponseReviews> responseReviews = new ArrayList<>();
+        List<ResponseReviewsByLecture> responseReviews = new ArrayList<>();
         for (int i = 0; i < reviews.getContent().size(); i++) {
             List<String> keywordContent = new ArrayList<>();
             List<ReviewKeyword> keywords = reviews.getContent().get(i).getKeywords();
@@ -91,7 +98,7 @@ public class ReviewService {
             });
 
             responseReviews.add(
-                    ResponseReviews.builder()
+                    ResponseReviewsByLecture.builder()
                             .id(reviews.getContent().get(i).getId())
                             .nickname(responseUserNicknameAndImages.getData().get(i).getNickname())
                             .imageUrl(responseUserNicknameAndImages.getData().get(i).getImageUrl())
@@ -99,16 +106,19 @@ public class ReviewService {
                             .keywordContent(keywordContent)
                             .build());
         }
-        return responseReviews;
+        return responseService.getReviewsResult(reviews.getTotalPages(), reviews.getTotalElements(), responseReviews);
     }
 
     @Transactional(readOnly = true)
-    public List<ResponseReviews> getReviewsByUser(String userId, Pageable pageable) {
+    public ReviewsResult<ResponseReviewsByUser> getReviewsByUser(String userId, Pageable pageable) {
         Page<Review> reviews = reviewRepository.findAllByUserIdAndWithdraw(Long.valueOf(userId), pageable, false);
-        ResponseUserNicknameAndImage responseUserNicknameAndImages =
-                userServiceFeignClient.getUserNicknameAndImg(List.of(Long.valueOf(userId)));
+        List<Long> lectureIdList = new ArrayList<>();
+        for (Review review : reviews.getContent()) {
+            lectureIdList.add(review.getLectureId());
+        }
+        ResponseLecture responseLectures = lectureServiceFeignClient.getLectureNameAndVendor(lectureIdList);
 
-        List<ResponseReviews> responseReviews = new ArrayList<>();
+        List<ResponseReviewsByUser> responseReviews = new ArrayList<>();
         for (int i = 0; i < reviews.getContent().size(); i++) {
             List<String> keywordContent = new ArrayList<>();
             List<ReviewKeyword> keywords = reviews.getContent().get(i).getKeywords();
@@ -117,15 +127,17 @@ public class ReviewService {
             });
 
             responseReviews.add(
-                    ResponseReviews.builder()
-                            .id(reviews.getContent().get(i).getId())
-                            .nickname(responseUserNicknameAndImages.getData().get(0).getNickname())
-                            .imageUrl(responseUserNicknameAndImages.getData().get(0).getImageUrl())
+                    ResponseReviewsByUser.builder()
+                            .reviewId(reviews.getContent().get(i).getId())
+                            .lectureId(reviews.getContent().get(i).getLectureId())
+                            .likes(reviews.getContent().get(i).getLikes())
+                            .lectureName(responseLectures.getData().get(i).getName())
+                            .lectureVendorName(responseLectures.getData().get(i).getVendorName())
                             .content(reviews.getContent().get(i).getContent())
                             .keywordContent(keywordContent)
                             .build());
         }
-        return responseReviews;
+        return responseService.getReviewsResult(reviews.getTotalPages(), reviews.getTotalElements(), responseReviews);
     }
 
     @Transactional(readOnly = true)
