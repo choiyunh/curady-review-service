@@ -11,10 +11,12 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseReviews {
-    private Long id;
-    private String nickname;
-    private String imageUrl;
+public class ResponseReviewsByUser {
+    private Long reviewId;
+    private Long lectureId;
+    private int likes;
     private String content;
+    private String lectureName;
+    private String lectureVendorName;
     private List<String> keywordContent;
 }

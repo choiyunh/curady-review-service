@@ -2,6 +2,7 @@ package com.curady.reviewservice.global.service;
 
 import com.curady.reviewservice.global.result.MultipleResult;
 import com.curady.reviewservice.global.result.Result;
+import com.curady.reviewservice.global.result.ReviewsResult;
 import com.curady.reviewservice.global.result.SingleResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,16 @@ public class ResponseService {
     public <T> MultipleResult<T> getMultipleResult(List<T> data) {
         MultipleResult<T> result = new MultipleResult<>();
         setSuccessResult(result);
+        result.setData(data);
+
+        return result;
+    }
+
+    public <T> ReviewsResult<T> getReviewsResult(int totalPage, long totalReview, List<T> data) {
+        ReviewsResult<T> result = new ReviewsResult<>();
+        setSuccessResult(result);
+        result.setTotalPage(totalPage);
+        result.setTotalReview(totalReview);
         result.setData(data);
 
         return result;
